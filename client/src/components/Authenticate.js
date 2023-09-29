@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import "./style.css";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
@@ -9,7 +10,7 @@ import logo from "../media/Festival-Events_Web_1200x600.jpg";
 const Authenticate = ({ updateUser }) => {
   const [signUp, setSignUp] = useState(false);
   const [userdata, setUserData] = useState({ username: "", email: "" });
-
+  const history = useHistory();
   const handleSignUpClick = () => setSignUp((signUp) => !signUp);
   //   const navigate = useNavigate();
 
@@ -23,9 +24,8 @@ const Authenticate = ({ updateUser }) => {
     fetch(signUp ? "/signup" : "/login", config)
       .then((resp) => resp.json())
       .then((user) => {
-        
         updateUser(user);
-        // navigate("/");
+        history.push("/eventspage");
       });
   };
 
@@ -88,6 +88,7 @@ const Authenticate = ({ updateUser }) => {
         </Col>
       </Row>
     </Container>
+    
   );
 };
 export default Authenticate;
