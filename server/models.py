@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy import MetaData
+from sqlalchemy_serializer import SerializerMixin
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
@@ -9,8 +10,11 @@ metadata = MetaData(naming_convention={
 db = SQLAlchemy(metadata=metadata)
 
 
-class User(db.Model):
+class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
+
+    serialize_rules = ("-events.user",)
+
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
@@ -24,8 +28,10 @@ class User(db.Model):
     events = db.relationship('Event', back_populates='user')
 
 
-class Event(db.Model):
+class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'
+
+    serialize_rules = ("-user.events",)
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)

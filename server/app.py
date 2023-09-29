@@ -5,6 +5,7 @@ from models import db, User, Event
 from flask_marshmallow import Marshmallow
 from flask_restful import Api, Resource
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -15,30 +16,30 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 app.secret_key = b'9\xd143$R\x0b\xfb\x8e\xf9z\xe2U\x02\x8b:'
-ma = Marshmallow(app)
+# ma = Marshmallow(app)
 api = Api(app)
 
 
-class UserSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = User
-    id = ma.auto_field()
-    username = ma.auto_field()
+# class UserSchema(ma.SQLAlchemySchema):
+#     class Meta:
+#         model = User
+#     id = ma.auto_field()
+#     username = ma.auto_field()
 
 
-singular_user_schema = UserSchema()
-plural_user_schema = UserSchema(many=True)
+# singular_user_schema = UserSchema()
+# plural_user_schema = UserSchema(many=True)
 
 
-class EventSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Event
-    id = ma.auto_field()
-    title = ma.auto_field()
+# class EventSchema(ma.SQLAlchemySchema):
+#     class Meta:
+#         model = Event
+#     id = ma.auto_field()
+#     title = ma.auto_field()
 
 
-singular_event_schema = EventSchema()
-plural_event_schema = EventSchema(many=True)
+# singular_event_schema = EventSchema()
+# plural_event_schema = EventSchema(many=True)
 
 
 @app.route('/')
@@ -49,12 +50,14 @@ def index():
 @app.route('/users', methods=['GET', 'POST'])
 def users():
     if request.method == 'GET':
+        users = User.query.all()
 
-        response = make_response(
-            plural_user_schema.dump(
-                User.query.order_by(User.last_name.asc()).all()),
-            200
-        )
+        user_dictionaries = []
+        for user in users:
+            print(user)
+            user_dictionaries.append(user.to_dict())
+        response = make_response(user_dictionaries, 200)
+
         return response
 
 
