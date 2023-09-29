@@ -88,7 +88,6 @@ const Authenticate = ({ updateUser }) => {
         </Col>
       </Row>
     </Container>
-    
   );
 };
 export default Authenticate;
