@@ -1,0 +1,35 @@
+h1{
+    font-family: Arial;
+    font-size: 20px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    
+    margin: auto;
+    font-family: Arial;
+    font-size: 20px;
+    
+  }
+  
+  input[type="submit"] {
+    background-color: #42ddf5;
+    color: white;
+    height: 40px;
+    width: 100px;
+    font-family: Arial;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .auth-errors-switch-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  img{
+    padding: 40px;
+  }
+  
