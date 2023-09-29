@@ -2,7 +2,6 @@ from flask import Flask, request, make_response, jsonify, session
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, User, Event
-from flask_marshmallow import Marshmallow
 from flask_restful import Api, Resource
 
 
@@ -16,30 +15,8 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 app.secret_key = b'9\xd143$R\x0b\xfb\x8e\xf9z\xe2U\x02\x8b:'
-# ma = Marshmallow(app)
+
 api = Api(app)
-
-
-# class UserSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = User
-#     id = ma.auto_field()
-#     username = ma.auto_field()
-
-
-# singular_user_schema = UserSchema()
-# plural_user_schema = UserSchema(many=True)
-
-
-# class EventSchema(ma.SQLAlchemySchema):
-#     class Meta:
-#         model = Event
-#     id = ma.auto_field()
-#     title = ma.auto_field()
-
-
-# singular_event_schema = EventSchema()
-# plural_event_schema = EventSchema(many=True)
 
 
 @app.route('/')
@@ -64,13 +41,12 @@ def users():
 @app.route('/events', methods=['GET', 'POST'])
 def events():
     if request.method == 'GET':
+        events = Event.query.all()
+        event_dictionaries = []
+        for event in events:
+            event_dictionaries.append(event.to_dict())
+        response = make_response(event_dictionaries, 200)
 
-        response = make_response(
-            plural_event_schema.dump(
-                Event.query.all()
-            ),
-            200
-        )
         return response
 
 
