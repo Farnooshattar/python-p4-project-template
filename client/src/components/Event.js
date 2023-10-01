@@ -16,14 +16,14 @@ function Event({ event }) {
                 <EventsImage />
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item>
+            {/* <Nav.Item>
               <Nav.Link href="#link">Link</Nav.Link>
             </Nav.Item>
             <Nav.Item>
               <Nav.Link href="#disabled" disabled>
                 Disabled
               </Nav.Link>
-            </Nav.Item>
+            </Nav.Item> */}
           </Nav>
         </Card.Header>
         <Card.Body>

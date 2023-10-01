@@ -7,6 +7,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import MyCarousel from "./MyCarousel";
+import UserEvents from "./UserEvents";
 
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
@@ -34,7 +35,7 @@ const EventsPage = () => {
               <EventsList events={events} />;
             </Tab>
             <Tab eventKey="cart" title="My Cart">
-              Tab content for cart
+              <UserEvents />
             </Tab>
             <Tab eventKey="logout" title="Logout">
               Tab content for logout

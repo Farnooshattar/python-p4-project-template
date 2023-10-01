@@ -50,6 +50,21 @@ def events():
         return response
 
 
+@app.route('/userevents', methods=['GET'])
+def userevents():
+    if request.method == 'GET':
+        print("user iddddddddd", session.get("user_id"))
+        userevents = Event.query.filter(
+            Event.user_id == session.get("user_id")).all()
+        userevents_dictionaries = []
+        for userevent in userevents:
+            userevents_dictionaries.append(userevent.to_dict())
+            print("USER EVENTSSSSSS", userevents_dictionaries)
+        response = make_response(userevents_dictionaries, 200)
+
+        return response
+
+
 class SignUp(Resource):
     def post(self):
         data = request.get_json()
@@ -60,7 +75,7 @@ class SignUp(Resource):
         db.session.add(user)
         db.session.commit()
 
-        session["user_id"] = app.secret_key
+        session["user_id"] = user.id
         return user.to_dict(), 200
 
 
@@ -73,7 +88,8 @@ def login():
     print("data;;;;;", data)
     user = User.query.filter(User.username == data["username"]).first()
 
-    session["user_id"] = app.secret_key
+    session["user_id"] = user.id
+    print("user id login", user.id)
     return user.to_dict(), 200
 
 

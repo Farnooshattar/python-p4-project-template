@@ -42,3 +42,5 @@ class Event(db.Model, SerializerMixin):
 
     # Define a many-to-one relationship with User
     user = db.relationship('User', back_populates='events')
+
+   
