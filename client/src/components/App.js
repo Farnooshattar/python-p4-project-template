@@ -8,8 +8,8 @@ function App() {
   console.log(user);
   return (
     <>
-      {user === null ? <Authenticate updateUser={updateUser} /> : null}
       <Switch>
+        {user === null ? <Authenticate updateUser={updateUser} /> : null}
         <Route path="/eventspage" component={EventsPage} />
       </Switch>
     </>

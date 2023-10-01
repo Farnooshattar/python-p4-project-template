@@ -31,7 +31,7 @@ def users():
 
         user_dictionaries = []
         for user in users:
-            print(user)
+            print("userrrrrrrrr", user.email)
             user_dictionaries.append(user.to_dict())
         response = make_response(user_dictionaries, 200)
 
