@@ -3,6 +3,11 @@ import React, { useEffect, useState } from "react";
 
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import MyCarousel from "./MyCarousel";
+
 const EventsPage = () => {
   const [events, setEvents] = useState([]);
   const [key, setKey] = useState("home");
@@ -15,21 +20,28 @@ const EventsPage = () => {
 
   return (
     <>
-      <Tabs
-        id="controlled-tab-example"
-        activeKey={key}
-        onSelect={(k) => setKey(k)}
-        className="mb-3">
-        <Tab eventKey="home" title="Home">
-          <EventsList events={events} />;
-        </Tab>
-        <Tab eventKey="profile" title="Profile">
-          Tab content for Profile
-        </Tab>
-        <Tab eventKey="contact" title="Contact" disabled>
-          Tab content for Contact
-        </Tab>
-      </Tabs>
+      <Container>
+        <Row>
+          <MyCarousel />
+        </Row>
+        <Row>
+          <Tabs
+            id="controlled-tab-example"
+            activeKey={key}
+            onSelect={(k) => setKey(k)}
+            className="mb-3">
+            <Tab eventKey="home" title="Home">
+              <EventsList events={events} />;
+            </Tab>
+            <Tab eventKey="cart" title="My Cart">
+              Tab content for cart
+            </Tab>
+            <Tab eventKey="logout" title="Logout">
+              Tab content for logout
+            </Tab>
+          </Tabs>
+        </Row>
+      </Container>
     </>
   );
 };

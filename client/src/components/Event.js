@@ -29,7 +29,7 @@ function Event({ event }) {
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           <Card.Text>{description}</Card.Text>
-          <Button variant="primary">Buy Ticket</Button>
+          <Button variant="primary">Add to Cart</Button>
         </Card.Body>
       </Card>
     </div>
