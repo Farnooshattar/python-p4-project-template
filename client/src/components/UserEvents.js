@@ -1,4 +1,4 @@
-import EventsList from "./EventsList";
+import UserEventsList from "./UserEventsList";
 import React, { useEffect, useState } from "react";
 const UserEvents = () => {
   const [userevents, setUserEvents] = useState([]);
@@ -9,6 +9,6 @@ const UserEvents = () => {
       .then((userevents) => setUserEvents(userevents));
   }, []);
 
-  return <EventsList events={userevents} />;
+  return <UserEventsList events={userevents} />;
 };
 export default UserEvents;

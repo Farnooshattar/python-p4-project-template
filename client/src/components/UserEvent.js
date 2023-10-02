@@ -4,29 +4,8 @@ import Nav from "react-bootstrap/Nav";
 
 import EventsImage from "./EventsImage";
 
-function Event({ event }) {
+function UserEvent({ event }) {
   const { id, title, description, created_at, updated_at } = event;
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Create a data object with the user and event IDs
-    const data = {
-      // user_id: session["user_id"],
-      event_id: id, // Assuming you have access to the event's ID
-    };
-
-    fetch("/add_event_to_user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((resp) => resp.json())
-      .then((response) => {
-        // Handle the response from the server here
-        console.log(response);
-      });
-  };
   return (
     <div>
       <Card>
@@ -50,12 +29,10 @@ function Event({ event }) {
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           <Card.Text>{description}</Card.Text>
-          <Button variant="primary" onClick={handleSubmit}>
-            Add to Cart
-          </Button>
+          <Button variant="primary">Buy Ticket</Button>
         </Card.Body>
       </Card>
     </div>
   );
 }
-export default Event;
+export default UserEvent;

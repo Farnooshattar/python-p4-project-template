@@ -87,6 +87,34 @@ class SignUp(Resource):
 
 api.add_resource(SignUp, "/signup")
 
+@app.route('/add_event_to_user', methods=['POST'])
+def add_event_to_user_route():
+    data = request.get_json()
+    user_id = User.query.filter(User.id == session.get("user_id")).first().id
+    # user_id = data.get("user_id")
+    event_id = data.get("event_id")
+
+    result = add_event_to_user(user_id, event_id)
+
+    return result
+
+# Define the function to add an event to a user's list
+def add_event_to_user(user_id, event_id):
+    # Retrieve the user and event objects
+    user = User.query.get(user_id)
+    event = Event.query.get(event_id)
+
+    if user is not None and event is not None:
+        # Check if the event is not already in the user's events
+        if event not in user.events:
+            user.events.append(event)  # Associate the event with the user
+            db.session.commit()
+            return {"message": "Event added to user's list successfully"}, 200
+        else:
+            return {"message": "Event is already in user's list"}, 409
+    else:
+        return {"message": "User or event not found"}, 404
+
 
 @app.route("/login", methods=["POST"])
 def login():
