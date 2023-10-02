@@ -34,10 +34,9 @@ def make_events():
             event = Event(
                 title=fake.word(),
                 description=fake.sentence(),
-                user=user,
             )
             events.append(event)
-
+        user.events.extend(events)  # Populate the many-to-many relationship
         db.session.add_all(events)
 
     db.session.commit()
