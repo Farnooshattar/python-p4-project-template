@@ -30,7 +30,6 @@ function MyCarousel() {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-      ;
     </>
   );
 }

@@ -8,8 +8,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import MyCarousel from "./MyCarousel";
 import UserEvents from "./UserEvents";
+import Logout from "./Logout";
 
-const EventsPage = () => {
+const HomePage = () => {
   const [events, setEvents] = useState([]);
   const [key, setKey] = useState("home");
 
@@ -22,7 +23,7 @@ const EventsPage = () => {
   return (
     <>
       <Container>
-        <Row>
+        <Row className="mx-auto">
           <MyCarousel />
         </Row>
         <Row>
@@ -32,18 +33,16 @@ const EventsPage = () => {
             onSelect={(k) => setKey(k)}
             className="mb-3">
             <Tab eventKey="home" title="Home">
-              <EventsList events={events} />;
+              <EventsList events={events} />
             </Tab>
             <Tab eventKey="cart" title="My Cart">
               <UserEvents />
             </Tab>
-            <Tab eventKey="logout" title="Logout">
-              Tab content for logout
-            </Tab>
+            <Tab eventKey="logout" title="Logout"></Tab>
           </Tabs>
         </Row>
       </Container>
     </>
   );
 };
-export default EventsPage;
+export default HomePage;

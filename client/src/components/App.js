@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
 import Authenticate from "./Authenticate";
-import EventsPage from "./EventsPage";
+import HomePage from "./HomePage";
 function App() {
   const [user, setUser] = useState(null);
   const updateUser = (user) => setUser(user);
@@ -10,7 +10,7 @@ function App() {
     <>
       <Switch>
         {user === null ? <Authenticate updateUser={updateUser} /> : null}
-        <Route path="/eventspage" component={EventsPage} />
+        <Route path="/eventspage" component={HomePage} />
       </Switch>
     </>
   );
