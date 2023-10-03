@@ -29,14 +29,6 @@ const HomePage = () => {
   const handleLogout = () => {
     fetch("/logout", { method: "DELETE" }).then(() => history.push("/logout"));
   };
-  /* 
-  1. You have a fetch inside the UserEvents component.
-  2. Refactor so that fetch happens in its own function (e.g. populateUserCart)
-  3. During useEffect, run that function. Functionality should be identical to current functionality. 
-  4. Move useEffect and populateUserCart to HomePage.
-  5. Pass populateUserCart and user cart setter function to where you add events to cart.
-  
-  */
 
   return (
     <>

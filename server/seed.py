@@ -34,6 +34,7 @@ def make_events():
             event = Event(
                 title=fake.word(),
                 description=fake.sentence(),
+                in_cart=0,
             )
             events.append(event)
         user.events.extend(events)  # Populate the many-to-many relationship

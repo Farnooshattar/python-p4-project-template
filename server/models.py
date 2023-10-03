@@ -44,6 +44,7 @@ class Event(db.Model, SerializerMixin):
     description = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
+    in_cart = db.Column(db.Integer)
 
     # Define the many-to-many relationship with User
     users = db.relationship('User', secondary=user_event_association, back_populates='events')

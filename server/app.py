@@ -82,6 +82,26 @@ class SignUp(Resource):
 
 api.add_resource(SignUp, "/signup")
 
+class Cart(Resource):
+    def patch(self):
+        try:
+            data = request.get_json()
+            if "in_cart" not in data:
+                return {"message": "Missing 'in_cart' parameter"}, 400
+
+            event = Event.query.first()  # Replace this with your logic to fetch the event you want to update
+
+            if not event:
+                return {"message": "Event not found"}, 404
+
+            event.in_cart = data["in_cart"]
+            db.session.commit()
+            return event.to_dict(), 200
+        except Exception as e:
+            return {"message": str(e)}, 500
+
+api.add_resource(Cart, "/incart")
+    
 @app.route('/add_event_to_user', methods=['POST'])
 def add_event_to_user_route():
     data = request.get_json()
