@@ -19,11 +19,6 @@ app.secret_key = b'9\xd143$R\x0b\xfb\x8e\xf9z\xe2U\x02\x8b:'
 api = Api(app)
 
 
-@app.route('/')
-def index():
-    return '<h1>Welcome to my app!</h1>'
-
-
 @app.route('/users', methods=['GET', 'POST'])
 def users():
     if request.method == 'GET':

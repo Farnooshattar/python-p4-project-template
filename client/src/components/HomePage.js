@@ -6,14 +6,19 @@ import Tabs from "react-bootstrap/Tabs";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+
 import MyCarousel from "./MyCarousel";
 import UserEvents from "./UserEvents";
+
+import { useHistory } from "react-router-dom";
 import Logout from "./Logout";
 
 const HomePage = () => {
   const [events, setEvents] = useState([]);
   const [key, setKey] = useState("home");
   const [addedToCart, setaddedToCart] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     fetch("/events", { method: "GET" })
@@ -21,6 +26,9 @@ const HomePage = () => {
       .then((events) => setEvents(events));
   }, []);
 
+  const handleLogout = () => {
+    fetch("/logout", { method: "DELETE" }).then(() => history.push("/logout"));
+  };
   /* 
   1. You have a fetch inside the UserEvents component.
   2. Refactor so that fetch happens in its own function (e.g. populateUserCart)
@@ -37,19 +45,26 @@ const HomePage = () => {
           <MyCarousel />
         </Row>
         <Row>
-          <Tabs
-            id="controlled-tab-example"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3">
-            <Tab eventKey="home" title="Home">
-              <EventsList events={events} setaddedToCart={setaddedToCart} />
-            </Tab>
-            <Tab eventKey="cart" title="My Cart">
-              <UserEvents addedToCart={addedToCart} />
-            </Tab>
-            <Tab eventKey="logout" title="Logout"></Tab>
-          </Tabs>
+          <Col>
+            <Tabs
+              id="controlled-tab-example"
+              activeKey={key}
+              onSelect={(k) => setKey(k)}
+              className="mb-3">
+              <Tab eventKey="home" title="Home">
+                <EventsList events={events} setaddedToCart={setaddedToCart} />
+              </Tab>
+              <Tab eventKey="cart" title="My Cart">
+                <UserEvents addedToCart={addedToCart} />
+              </Tab>
+              <Tab eventKey="about" title="About"></Tab>
+            </Tabs>
+          </Col>
+          <Col>
+            <Button variant="outline-dark" onClick={handleLogout}>
+              Logout
+            </Button>
+          </Col>
         </Row>
       </Container>
     </>
