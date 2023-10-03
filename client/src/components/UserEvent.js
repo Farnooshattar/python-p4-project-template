@@ -6,6 +6,7 @@ import EventsImage from "./EventsImage";
 
 function UserEvent({ event }) {
   const { id, title, description, created_at, updated_at } = event;
+  
   return (
     <div>
       <Card>
@@ -29,7 +30,9 @@ function UserEvent({ event }) {
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           <Card.Text>{description}</Card.Text>
-          <Button variant="primary">Buy Ticket</Button>
+          <Button variant="primary" >
+            Buy Ticket
+          </Button>
         </Card.Body>
       </Card>
     </div>

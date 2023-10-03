@@ -4,7 +4,7 @@ import Nav from "react-bootstrap/Nav";
 
 import EventsImage from "./EventsImage";
 
-function Event({ event }) {
+function Event({ event, setaddedToCart }) {
   const { id, title, description, created_at, updated_at } = event;
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -12,6 +12,10 @@ function Event({ event }) {
     const data = {
       // user_id: session["user_id"],
       event_id: id, // Assuming you have access to the event's ID
+    };
+    const handleAddToCart = () => {
+      // Call the addToCart function to add the event to the cart
+      setaddedToCart(true);
     };
 
     fetch("/add_event_to_user", {
@@ -24,6 +28,7 @@ function Event({ event }) {
       .then((resp) => resp.json())
       .then((response) => {
         // Handle the response from the server here
+        handleAddToCart();
         console.log(response);
       });
   };
