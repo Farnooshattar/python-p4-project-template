@@ -11,6 +11,7 @@ function Event({ event, setaddedToCart }) {
   console.log("first", in_cart);
   const [cart, setCart] = useState(in_cart);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [commentText, setCommentText] = useState(""); // State to store comment text
   const handleSubmit = (e) => {
     e.preventDefault();
     // Create a data object with the user and event IDs
@@ -56,6 +57,27 @@ function Event({ event, setaddedToCart }) {
         console.log(response);
       });
   };
+  const handleCommentSubmit = () => {
+    // Create a data object with the comment text
+    const data = {
+      text: commentText,
+    };
+
+    fetch(`/events/${id}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((resp) => resp.json())
+      .then((response) => {
+        // Handle the response from the server here
+        console.log(response);
+        // Clear the comment text input
+        setCommentText("");
+      });
+  };
   return (
     <div>
       <Card>
@@ -88,6 +110,14 @@ function Event({ event, setaddedToCart }) {
             disabled={isAddedToCart}>
             {isAddedToCart ? "Added to Cart" : "Add to Cart"}
           </Button>
+          {/* Comment Form */}
+          <form onSubmit={handleCommentSubmit}>
+            <textarea
+              placeholder="Add a comment"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}></textarea>
+            <button type="submit">Add Comment</button>
+          </form>
         </Card.Body>
       </Card>
     </div>

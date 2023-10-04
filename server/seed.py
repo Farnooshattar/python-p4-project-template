@@ -1,7 +1,8 @@
 from app import app
-from models import db, User, Event
+from models import db, User, Event, Comment
 from faker import Faker
 from datetime import datetime
+from sqlalchemy import func
 
 fake = Faker()
 
@@ -42,8 +43,26 @@ def make_events():
 
     db.session.commit()
 
+def make_comments():
+    Comment.query.delete()
+
+    for event in Event.query.all():
+        comments = []
+        for _ in range(3):  # Adjust the number of comments per event as needed
+            comment = Comment(
+                text=fake.paragraph(),               
+                event_id=event.id
+            )
+            user=User.query.order_by(func.random()).first()  # Assign a random user to the comment
+            
+            user.comments.append(comment)
+            db.session.add(user)
+            # comments.append(comment)
+
+    db.session.commit()
 
 if __name__ == '__main__':
     with app.app_context():
         make_users()
         make_events()
+        make_comments()

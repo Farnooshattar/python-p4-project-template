@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, jsonify, session
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import db, User, Event
+from models import db, User, Event, Comment
 from flask_restful import Api, Resource
 
 
@@ -65,6 +65,27 @@ def userevents():
             # Handle the case where the user is not found
             return {"message": "User not found"}, 404
 
+@app.route('/events/<int:event_id>/comments', methods=['POST'])
+def add_comment_to_event(event_id):
+    data = request.get_json()
+    user_id = session.get("user_id")
+
+    event = Event.query.get(event_id)
+    user = User.query.get(user_id)
+
+    if event is None or user is None:
+        return {"message": "Event or user not found"}, 404
+
+    text = data.get("text")
+
+    if not text:
+        return {"message": "Comment text is required"}, 400
+
+    comment = Comment(text=text, user=user, event=event)
+    db.session.add(comment)
+    db.session.commit()
+
+    return {"message": "Comment added successfully"}, 201
 
 class SignUp(Resource):
     def post(self):
