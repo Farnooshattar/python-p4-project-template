@@ -65,27 +65,54 @@ def userevents():
             # Handle the case where the user is not found
             return {"message": "User not found"}, 404
 
-@app.route('/events/<int:event_id>/comments', methods=['POST'])
-def add_comment_to_event(event_id):
-    data = request.get_json()
-    user_id = session.get("user_id")
+class EventComment(Resource):
+    def post(self, event_id):
+        data = request.get_json()
+        user_id = session.get("user_id")
 
+        event = Event.query.get(event_id)
+        user = User.query.get(user_id)
+
+        if event is None or user is None:
+            return {"message": "Event or user not found"}, 404
+
+        text = data.get("text")
+
+        if not text:
+            return {"message": "Comment text is required"}, 400
+
+        comment = Comment(text=text, user=user, event=event)
+        db.session.add(comment)
+        db.session.commit()
+
+        return {"message": "Comment added successfully"}, 201
+
+# Add the resource to the API
+api.add_resource(EventComment, '/events/<int:event_id>/comments')
+
+@app.route('/events/<int:event_id>/comments', methods=['GET'])
+def get_event_comments(event_id):
     event = Event.query.get(event_id)
-    user = User.query.get(user_id)
+    print("event id", event_id)
+    if event is None:
+        return jsonify({"message": "Event not found"}), 404
 
-    if event is None or user is None:
-        return {"message": "Event or user not found"}, 404
+    comments = Comment.query.filter_by(event_id=event_id).all()
+    # You can serialize the comments as needed before sending the response
+    print("comments", comments)
+    
+    serialized_comments = []  # Serialize comments as needed
+    for comment in comments:
+        serialized_comment = {
+            "id": comment.id,
+            "text": comment.text,
+            "created_at": comment.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            # Add other fields as needed
+        }
+        print("serialized comments", serialized_comment)
+        serialized_comments.append(serialized_comment)
 
-    text = data.get("text")
-
-    if not text:
-        return {"message": "Comment text is required"}, 400
-
-    comment = Comment(text=text, user=user, event=event)
-    db.session.add(comment)
-    db.session.commit()
-
-    return {"message": "Comment added successfully"}, 201
+    return jsonify(serialized_comments)
 
 class SignUp(Resource):
     def post(self):
@@ -177,12 +204,6 @@ def authorized():
         return user.to_dict(), 200
     else:
         return {"errors": "unauthorized"}, 401
-
-
-# @app.route("/logout", methods=["DELETE"])
-# def logout():
-#     session["user_id"] = None
-#     return {}, 204
 
 
 if __name__ == "__main__":

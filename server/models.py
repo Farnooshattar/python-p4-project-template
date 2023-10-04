@@ -20,7 +20,7 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     # serialize_rules = ("-event.users","-comment.user")
-    serialize_rules = ("-users.events","-comments")
+    serialize_rules = ("-comments",)
     
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
@@ -39,7 +39,7 @@ class User(db.Model, SerializerMixin):
 class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'
 
-    serialize_rules = ("-events.users", "-comments")
+    serialize_rules = ("-users", "-comments")
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
