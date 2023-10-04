@@ -10,6 +10,7 @@ function Event({ event, setaddedToCart }) {
   const { id, title, description, created_at, updated_at, in_cart } = event;
   console.log("first", in_cart);
   const [cart, setCart] = useState(in_cart);
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
   const handleSubmit = (e) => {
     e.preventDefault();
     // Create a data object with the user and event IDs
@@ -21,6 +22,7 @@ function Event({ event, setaddedToCart }) {
     const handleAddToCart = () => {
       // Call the addToCart function to add the event to the cart
       const updatedCart = cart + 1;
+      setIsAddedToCart(true);
       setCart(updatedCart);
 
       const cartdata = { in_cart: updatedCart };
@@ -76,10 +78,15 @@ function Event({ event, setaddedToCart }) {
         </Card.Header>
         <Card.Body>
           <Card.Title>{title}</Card.Title>
-          <Badge bg="secondary">{cart}</Badge>
+          <Badge bg="secondary">
+            <i style={{ color: "black" }}>Intersted People</i> :{cart}
+          </Badge>
           <Card.Text>{description}</Card.Text>
-          <Button variant="primary" onClick={handleSubmit}>
-            Add to Cart
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={isAddedToCart}>
+            {isAddedToCart ? "Added to Cart" : "Add to Cart"}
           </Button>
         </Card.Body>
       </Card>
