@@ -19,19 +19,17 @@ function Event({ event, setaddedToCart }) {
   const [lgShow, setLgShow] = useState(false);
   const data = {
     // user_id: session["user_id"],
-    event_id: id, // Assuming you have access to the event's ID
+    event_id: id,
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Create a data object with the user and event IDs
 
     const handleAddToCart = () => {
-      // Call the addToCart function to add the event to the cart
       const updatedCart = cart + 1;
       setIsAddedToCart(true);
       setCart(updatedCart);
 
-      const cartdata = { in_cart: updatedCart };
+      const cartdata = { in_cart: updatedCart, event_id: id };
       setaddedToCart(true);
       fetch("/incart", {
         method: "PATCH",
@@ -114,14 +112,6 @@ function Event({ event, setaddedToCart }) {
                 <EventsImage />
               </Nav.Link>
             </Nav.Item>
-            {/* <Nav.Item>
-              <Nav.Link href="#link">Link</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link href="#disabled" disabled>
-                Disabled
-              </Nav.Link>
-            </Nav.Item> */}
           </Nav>
         </Card.Header>
         <Card.Body>

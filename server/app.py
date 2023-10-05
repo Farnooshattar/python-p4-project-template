@@ -137,12 +137,12 @@ class Cart(Resource):
             if "in_cart" not in data:
                 return {"message": "Missing 'in_cart' parameter"}, 400
 
-            event = Event.query.first()  # Replace this with your logic to fetch the event you want to update
+            event = Event.query.filter(Event.id==data["event_id"]).first()  # Replace this with your logic to fetch the event you want to update
 
             if not event:
                 return {"message": "Event not found"}, 404
 
-            event.in_cart = data["in_cart"]
+            event.in_cart = event.in_cart+1
             db.session.commit()
             return event.to_dict(), 200
         except Exception as e:
