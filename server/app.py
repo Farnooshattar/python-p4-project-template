@@ -19,24 +19,27 @@ app.secret_key = b'9\xd143$R\x0b\xfb\x8e\xf9z\xe2U\x02\x8b:'
 api = Api(app)
 
 
-@app.route('/users', methods=['GET', 'POST'])
+@app.route('/users', methods=['GET'])
 def users():
     if request.method == 'GET':
+
         users = User.query.all()
 
         user_dictionaries = []
         for user in users:
-            print("userrrrrrrrr", user.email)
             user_dictionaries.append(user.to_dict())
+            print("usertodict", user.to_dict() )
         response = make_response(user_dictionaries, 200)
 
         return response
 
 
-@app.route('/events', methods=['GET', 'POST'])
+@app.route('/events', methods=['GET'])
 def events():
     if request.method == 'GET':
+
         events = Event.query.all()
+
         event_dictionaries = []
         for event in events:
             event_dictionaries.append(event.to_dict())
@@ -49,16 +52,14 @@ def events():
 def userevents():
     if request.method == 'GET':
         user_id = session.get("user_id")
-        print("user iddddddddd", user_id)
-
         # Retrieve the current user
         user = User.query.get(user_id)
-
+        
         if user is not None:
             # Access the user's associated events through the 'events' relationship
             userevents = user.events
             userevents_dictionaries = [event.to_dict() for event in userevents]
-            print("USER EVENTSSSSSS", userevents_dictionaries)
+            
             response = make_response(userevents_dictionaries, 200)
             return response
         else:
@@ -114,22 +115,6 @@ def get_event_comments(event_id):
 
     return jsonify(serialized_comments)
 
-class SignUp(Resource):
-    def post(self):
-        data = request.get_json()
-        user = User(
-            username=data["username"],
-            email=data["email"]
-        )
-        db.session.add(user)
-        db.session.commit()
-
-        session["user_id"] = user.id
-        return user.to_dict(), 200
-
-
-api.add_resource(SignUp, "/signup")
-
 class Cart(Resource):
     def patch(self):
         try:
@@ -178,15 +163,28 @@ def add_event_to_user(user_id, event_id):
     else:
         return {"message": "User or event not found"}, 404
 
+class SignUp(Resource):
+    def post(self):
+        data = request.get_json()
+        user = User(
+            username=data["username"],
+            email=data["email"]
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        session["user_id"] = user.id
+        return user.to_dict(), 200
+
+api.add_resource(SignUp, "/signup")
 
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    print("data;;;;;", data)
+    
     user = User.query.filter(User.username == data["username"]).first()
 
     session["user_id"] = user.id
-    print("user id login", user.id)
     return user.to_dict(), 200
 
 
@@ -199,7 +197,7 @@ def logout():
 @app.route("/authorized", methods=["GET"])
 def authorized():
     user = User.query.filter(User.id == session.get("user_id")).first()
-    print(user)
+    print("authorized",user)
     if user:
         return user.to_dict(), 200
     else:
