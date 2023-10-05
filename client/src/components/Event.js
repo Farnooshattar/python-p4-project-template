@@ -9,20 +9,34 @@ import { useEffect } from "react";
 import EventsImage from "./EventsImage";
 
 function Event({ event, setaddedToCart }) {
-  const { id, title, description, created_at, updated_at, in_cart } = event;
-  console.log("first", in_cart);
+  const { id, title, description, in_cart } = event;
   const [cart, setCart] = useState(in_cart);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [commentText, setCommentText] = useState(""); // State to store comment text
-  const [commentsText, setCommentsText] = useState([]); // State to store comment text
+  const [commentsText, setCommentsText] = useState([]); // State to store all comments text
   const [smShow, setSmShow] = useState(false);
   const [lgShow, setLgShow] = useState(false);
+
+  //store the event id for adding the event to user's cart
   const data = {
-    // user_id: session["user_id"],
     event_id: id,
   };
+  //Add the event to user's cart when Add to Cart has been clicked
   const handleSubmit = (e) => {
     e.preventDefault();
+    fetch("/add_event_to_user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((resp) => resp.json())
+      .then((response) => {
+        // Handle the response from the server here
+        handleAddToCart();
+        console.log(response);
+      });
 
     const handleAddToCart = () => {
       const updatedCart = cart + 1;
@@ -45,20 +59,6 @@ function Event({ event, setaddedToCart }) {
           console.log("my response", response);
         });
     };
-
-    fetch("/add_event_to_user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((resp) => resp.json())
-      .then((response) => {
-        // Handle the response from the server here
-        handleAddToCart();
-        console.log(response);
-      });
   };
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -66,8 +66,6 @@ function Event({ event, setaddedToCart }) {
     const data = {
       text: commentText,
     };
-    console.log("data", data);
-    console.log("id", id);
 
     fetch("/events/" + id + "/comments", {
       method: "POST",
@@ -78,12 +76,11 @@ function Event({ event, setaddedToCart }) {
     })
       .then((resp) => resp.json())
       .then((response) => {
-        // Handle the response from the server here
-        console.log(response);
         // Clear the comment text input
         setCommentText("");
       });
   };
+  //show all the comments
   const handleShowComments = () => {
     setSmShow(true);
     fetch("/events/" + id + "/comments", { method: "GET" })
@@ -95,7 +92,6 @@ function Event({ event, setaddedToCart }) {
       })
       .then((comments) => {
         setCommentsText(comments);
-        console.log("Comments:", comments);
       })
       .catch((error) => {
         console.error("Error fetching comments:", error);
