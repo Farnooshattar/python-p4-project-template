@@ -2,6 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
+from flask_bcrypt import bcrypt
+from sqlalchemy.ext.hybrid import hybrid_property
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
@@ -12,16 +14,19 @@ db = SQLAlchemy(metadata=metadata)
 
 # Define the association table for the many-to-many relationship
 user_event_association = db.Table('user_event_association',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('event_id', db.Integer, db.ForeignKey('events.id'))
-)
+                                  db.Column('user_id', db.Integer,
+                                            db.ForeignKey('users.id')),
+                                  db.Column('event_id', db.Integer,
+                                            db.ForeignKey('events.id'))
+                                  )
+
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     # serialize_rules = ("-event.users","-comment.user")
     serialize_rules = ("-comments",)
-    
+
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
     last_name = db.Column(db.String)
@@ -31,9 +36,22 @@ class User(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
+    _password_hash = db.Column(db.String)
+
     # many-to-many relationship with Event
-    events = db.relationship('Event', secondary=user_event_association, back_populates='users')
+    events = db.relationship(
+        'Event', secondary=user_event_association, back_populates='users')
     comments = db.relationship('Comment', backref='user')
+
+    @hybrid_property
+    def password_hash(self):
+        raise Exception("cannot access password hash")
+        # return self._password_hash
+
+    @password_hash.setter
+    def password_hash(self, password):
+        hashed_pw = bcrypt.generate_password_hash(password).decode('utf-8')
+        self._password_hash = hashed_pw
 
 
 class Event(db.Model, SerializerMixin):
@@ -49,7 +67,8 @@ class Event(db.Model, SerializerMixin):
     in_cart = db.Column(db.Integer)
 
     # many-to-many relationship with User
-    users = db.relationship('User', secondary=user_event_association, back_populates='events')
+    users = db.relationship(
+        'User', secondary=user_event_association, back_populates='events')
     # one-to-many relationship with Comment
     comments = db.relationship('Comment', backref='event')
 
@@ -61,10 +80,7 @@ class Comment(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
-  
+
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # events = db.relationship('Event', backref='comments')
-
-   
-    

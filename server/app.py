@@ -1,11 +1,16 @@
+import ipdb
 from flask import Flask, request, make_response, jsonify, session
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, User, Event, Comment
 from flask_restful import Api, Resource
+from flask_bcrypt import Bcrypt
 
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
+# ipdb.set_trace()
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -28,7 +33,7 @@ def users():
         user_dictionaries = []
         for user in users:
             user_dictionaries.append(user.to_dict())
-            print("usertodict", user.to_dict() )
+            print("usertodict", user.to_dict())
         response = make_response(user_dictionaries, 200)
 
         return response
@@ -54,17 +59,18 @@ def userevents():
         user_id = session.get("user_id")
         # Retrieve the current user
         user = User.query.get(user_id)
-        
+
         if user is not None:
             # Access the user's associated events through the 'events' relationship
             userevents = user.events
             userevents_dictionaries = [event.to_dict() for event in userevents]
-            
+
             response = make_response(userevents_dictionaries, 200)
             return response
         else:
             # Handle the case where the user is not found
             return {"message": "User not found"}, 404
+
 
 class EventComment(Resource):
     def post(self, event_id):
@@ -88,8 +94,10 @@ class EventComment(Resource):
 
         return {"message": "Comment added successfully"}, 201
 
+
 # Add the resource to the API
 api.add_resource(EventComment, '/events/<int:event_id>/comments')
+
 
 @app.route('/events/<int:event_id>/comments', methods=['GET'])
 def get_event_comments(event_id):
@@ -101,7 +109,7 @@ def get_event_comments(event_id):
     comments = Comment.query.filter_by(event_id=event_id).all()
     # You can serialize the comments as needed before sending the response
     print("comments", comments)
-    
+
     serialized_comments = []  # Serialize comments as needed
     for comment in comments:
         serialized_comment = {
@@ -115,6 +123,7 @@ def get_event_comments(event_id):
 
     return jsonify(serialized_comments)
 
+
 class Cart(Resource):
     def patch(self):
         try:
@@ -122,7 +131,8 @@ class Cart(Resource):
             if "in_cart" not in data:
                 return {"message": "Missing 'in_cart' parameter"}, 400
 
-            event = Event.query.filter(Event.id==data["event_id"]).first()  # Replace this with your logic to fetch the event you want to update
+            # Replace this with your logic to fetch the event you want to update
+            event = Event.query.filter(Event.id == data["event_id"]).first()
 
             if not event:
                 return {"message": "Event not found"}, 404
@@ -133,8 +143,10 @@ class Cart(Resource):
         except Exception as e:
             return {"message": str(e)}, 500
 
+
 api.add_resource(Cart, "/incart")
-    
+
+
 @app.route('/add_event_to_user', methods=['POST'])
 def add_event_to_user_route():
     data = request.get_json()
@@ -147,6 +159,8 @@ def add_event_to_user_route():
     return result
 
 # Define the function to add an event to a user's list
+
+
 def add_event_to_user(user_id, event_id):
     # Retrieve the user and event objects
     user = User.query.get(user_id)
@@ -163,6 +177,7 @@ def add_event_to_user(user_id, event_id):
     else:
         return {"message": "User or event not found"}, 404
 
+
 class SignUp(Resource):
     def post(self):
         data = request.get_json()
@@ -176,12 +191,14 @@ class SignUp(Resource):
         session["user_id"] = user.id
         return user.to_dict(), 200
 
+
 api.add_resource(SignUp, "/signup")
+
 
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    
+
     user = User.query.filter(User.username == data["username"]).first()
 
     session["user_id"] = user.id
@@ -197,7 +214,7 @@ def logout():
 @app.route("/authorized", methods=["GET"])
 def authorized():
     user = User.query.filter(User.id == session.get("user_id")).first()
-    print("authorized",user)
+    print("authorized", user)
     if user:
         return user.to_dict(), 200
     else:

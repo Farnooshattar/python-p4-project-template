@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 flask-cors = "*"
+flask-bcrypt = "*"
+ipdb = "*"
 
 [dev-packages]
 
