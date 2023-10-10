@@ -30,12 +30,21 @@ const Authenticate = ({ updateUser }) => {
           : { username: userdata.username, password: userdata.password }
       ),
     };
-    fetch(signUp ? "/signup" : "/login", config)
-      .then((resp) => resp.json())
-      .then((user) => {
-        updateUser(user);
-        history.push("/eventspage");
-      });
+    fetch(signUp ? "/signup" : "/login", config).then((resp) => {
+      if (resp.ok) {
+        resp.json().then((user) => {
+          updateUser(user);
+          history.push("/eventspage");
+        });
+      } else {
+        resp.json().then((data) => {
+          setTimeout(() => {
+            setErrors([]);
+          }, 3000);
+          setErrors(data.errors);
+        });
+      }
+    });
   };
 
   const handleChange = ({ target }) => {
@@ -62,7 +71,13 @@ const Authenticate = ({ updateUser }) => {
         <Col>
           <Row>
             <div className="auth-errors-switch-wrapper">
-              {/* <h2 className="auth-errors">{"Errors here!!"}</h2> */}
+              <h2 className="auth-errors">
+                {errors.map((err) => (
+                  <p key={err} style={{ color: "red" }}>
+                    {err}
+                  </p>
+                ))}
+              </h2>
               <h2>
                 {signUp ? "Already have an account?" : "New to Events Master?"}
               </h2>
