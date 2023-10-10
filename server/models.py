@@ -1,15 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
-from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
-from flask_bcrypt import bcrypt
+from sqlalchemy.orm import validates
+from config import db, bcrypt
+
 from sqlalchemy.ext.hybrid import hybrid_property
 
-metadata = MetaData(naming_convention={
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-})
-
-db = SQLAlchemy(metadata=metadata)
 
 
 # Define the association table for the many-to-many relationship
@@ -45,14 +39,17 @@ class User(db.Model, SerializerMixin):
 
     @hybrid_property
     def password_hash(self):
-        raise Exception("cannot access password hash")
-        # return self._password_hash
+        import ipdb; ipdb.set_trace()
+        return self._password_hash
+        # raise Exception("Cannot access password hashes")
 
     @password_hash.setter
     def password_hash(self, password):
-        hashed_pw = bcrypt.generate_password_hash(password).decode('utf-8')
+        hashed_pw = bcrypt.generate_password_hash(password).decode("utf-8")
         self._password_hash = hashed_pw
 
+    def authenticate(self, provided_password):
+        return bcrypt.check_password_hash(self._password_hash, provided_password)
 
 class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'

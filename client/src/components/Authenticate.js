@@ -9,7 +9,12 @@ import logo from "../media/Festival-Events_Web_1200x600.jpg";
 // import { useNavigate } from "react-router-dom";
 const Authenticate = ({ updateUser }) => {
   const [signUp, setSignUp] = useState(false);
-  const [userdata, setUserData] = useState({ username: "", email: "" });
+  const [errors, setErrors] = useState([]);
+  const [userdata, setUserData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const history = useHistory();
   const handleSignUpClick = () => setSignUp((signUp) => !signUp);
   //   const navigate = useNavigate();
@@ -19,7 +24,11 @@ const Authenticate = ({ updateUser }) => {
     const config = {
       method: "POST",
       headers: { "content-Type": "application/json" },
-      body: JSON.stringify(signUp ? userdata : { username: userdata.username }),
+      body: JSON.stringify(
+        signUp
+          ? userdata
+          : { username: userdata.username, password: userdata.password }
+      ),
     };
     fetch(signUp ? "/signup" : "/login", config)
       .then((resp) => resp.json())
@@ -69,6 +78,13 @@ const Authenticate = ({ updateUser }) => {
                 type="text"
                 name="username"
                 value={userdata.username}
+                onChange={handleChange}
+              />
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={userdata.password}
                 onChange={handleChange}
               />
               {signUp && (

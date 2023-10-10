@@ -1,27 +1,14 @@
-import ipdb
-from flask import Flask, request, make_response, jsonify, session
-from flask_cors import CORS
-from flask_migrate import Migrate
-from models import db, User, Event, Comment
-from flask_restful import Api, Resource
-from flask_bcrypt import Bcrypt
+
+from models import User, Event, Comment
 
 
-app = Flask(__name__)
-bcrypt = Bcrypt(app)
-# ipdb.set_trace()
+from flask import request, make_response, session, jsonify
+from flask_restful import Resource
+from sqlalchemy.exc import IntegrityError
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.json.compact = False
 
-CORS(app)
-migrate = Migrate(app, db)
+from config import app, api, db
 
-db.init_app(app)
-app.secret_key = b'9\xd143$R\x0b\xfb\x8e\xf9z\xe2U\x02\x8b:'
-
-api = Api(app)
 
 
 @app.route('/users', methods=['GET'])
@@ -177,20 +164,38 @@ def add_event_to_user(user_id, event_id):
     else:
         return {"message": "User or event not found"}, 404
 
+def check_for_missing_values(data):
+    errors_list = []
+    for key, value in data.items():
+        if not value:
+            errors_list.append(f"{key} is required")
+    return errors_list
 
 class SignUp(Resource):
     def post(self):
         data = request.get_json()
-        user = User(
-            username=data["username"],
-            email=data["email"]
-        )
-        db.session.add(user)
-        db.session.commit()
+        errors = check_for_missing_values(data)
+        if len(errors) > 0:
+            return {"errors": errors}, 422
 
-        session["user_id"] = user.id
-        return user.to_dict(), 200
+        user = User(username=data['username'], email=data['email'])
+        
+        user.password_hash = data['password']
+        
+        try:
+            db.session.add(user)
+            db.session.commit()
+            
+            session["user_id"] = user.id
+            return user.to_dict(), 201
+        except IntegrityError as e:
+            
+            if isinstance(e, (IntegrityError)):
+                for error in e.orig.args:
+                    if "UNIQUE" in error:
+                        errors.append("Email already taken. Please try again")# Get the error message as a string
 
+            return {'errors': errors}, 422
 
 api.add_resource(SignUp, "/signup")
 
@@ -198,11 +203,15 @@ api.add_resource(SignUp, "/signup")
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-
-    user = User.query.filter(User.username == data["username"]).first()
-
-    session["user_id"] = user.id
-    return user.to_dict(), 200
+    user = User.query.filter(User.username == data['username']).first()
+    if user:
+        if user.authenticate(data['password']):
+            session["user_id"] = user.id 
+            return user.to_dict(), 200
+        else:
+            return {"errors": ["Username or password incorrect"]}, 401
+    else:
+        return {"errors": ["Username or password incorrect"]}, 401
 
 
 @app.route("/logout", methods=["DELETE"])
