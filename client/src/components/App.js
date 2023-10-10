@@ -12,6 +12,9 @@ function App() {
     <>
       <Switch>
         {user === null ? <Authenticate updateUser={updateUser} /> : null}
+        <Route exact path="/">
+          <Authenticate updateUser={updateUser} />
+        </Route>
         <Route path="/eventspage" component={HomePage} />
         <Route path="/logout" component={LogoutPage} />
       </Switch>
